@@ -15,10 +15,12 @@ const app = Consumer.create({
   handleMessage: async (message) => {
     console.log('message', message);
     const parsedBody = JSON.parse(message.Body);
+    const scanBucket = parsedBody.Records[0].s3.bucket.name
     const documentKey = parsedBody.Records[0].s3.object.key;
     
     const { Body: fileData } = await s3.getObject({
-      Bucket: process.env.SCAN_BUCKET,
+      // Bucket: process.env.SCAN_BUCKET,
+      Bucket: scanBucket,
       Key: documentKey
     }).promise();
 
@@ -40,7 +42,7 @@ const app = Consumer.create({
       }).promise();
 
       await s3.deleteObject({
-        Bucket: process.env.SCAN_BUCKET,
+        Bucket: scanBucket,
         Key: documentKey,
       }).promise();
 
