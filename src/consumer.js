@@ -13,20 +13,12 @@ const sqs = new SQS();
 const app = Consumer.create({
   queueUrl: process.env.VIRUS_SCAN_QUEUE_URL,
   handleMessage: async (message) => {
-    console.log('message');
-    console.log(message);
+    console.log('message', message);
     const parsedBody = JSON.parse(message.Body);
-    console.log(parsedBody);
-    // console.log(parsedBody.Records[0]);
-    // console.log(parsedBody.Records[0].s3);
-    // console.log(parsedBody.Records[0].s3.object);
-    // console.log(parsedBody.Records[0].s3.object.key);    
     const documentKey = parsedBody.Records[0].s3.object.key;
-    const sourceBucket = parsedBody.Records[0].s3.bucket.name;
-    console.log(sourceBucket);
     
     const { Body: fileData } = await s3.getObject({
-      Bucket: sourceBucket,
+      Bucket: process.env.SCAN_BUCKET,
       Key: documentKey
     }).promise();
 
@@ -48,7 +40,7 @@ const app = Consumer.create({
       }).promise();
 
       await s3.deleteObject({
-        Bucket: sourceBucket,
+        Bucket: process.env.SCAN_BUCKET,
         Key: documentKey,
       }).promise();
 
@@ -57,14 +49,7 @@ const app = Consumer.create({
         await s3.putObjectTagging({
           Bucket: process.env.QUARANTINE_BUCKET,
           Key: documentKey,
-          Tagging: {
-            TagSet: [
-              {
-                Key: 'AV_SCAN',
-                Value: 'INFECTED',
-              },
-            ],
-          },
+          Tagging:'AV_SCAN=INFECTED',
         }).promise();
       }
     } finally {
