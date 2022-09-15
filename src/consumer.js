@@ -16,7 +16,7 @@ const app = Consumer.create({
     console.log('message', message);
     const parsedBody = JSON.parse(message.Body);
     const scanBucket = parsedBody.Records[0].s3.bucket.name
-    const documentKey = parsedBody.Records[0].s3.object.key;
+    const documentKey = parsedBody.Records[0].s3.object.key.replace(/\+/g, " ");
     
     const { Body: fileData } = await s3.getObject({
       // Bucket: process.env.SCAN_BUCKET,
