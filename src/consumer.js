@@ -19,7 +19,6 @@ const app = Consumer.create({
     const documentKey = parsedBody.Records[0].s3.object.key.replace(/\+/g, " ");
     
     const { Body: fileData } = await s3.getObject({
-      // Bucket: process.env.SCAN_BUCKET,
       Bucket: scanBucket,
       Key: documentKey
     }).promise();
