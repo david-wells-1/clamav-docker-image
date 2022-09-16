@@ -40,11 +40,6 @@ const app = Consumer.create({
         Tagging: 'AV_SCAN=CLEAN',
       }).promise();
 
-      // await s3.deleteObject({
-      //   Bucket: scanBucket,
-      //   Key: documentKey,
-      // }).promise();
-
     } catch (e) {
       if (e.code === 1) {
         await s3.putObject({
@@ -53,19 +48,8 @@ const app = Consumer.create({
           Key: documentKey,
           Tagging: 'AV_SCAN=INFECTED',
         }).promise();
-        // await s3.putObjectTagging({
-        //   Bucket: process.env.QUARANTINE_BUCKET,
-        //   Key: documentKey,
-        //   Tagging: {
-        //     TagSet: [
-        //       {
-        //         Key: 'AV_SCAN',
-        //         Value: 'INFECTED',
-        //       },
-        //     ],
-        //   },
-        // }).promise();
       }
+      
     } finally {
       await sqs.deleteMessage({
         QueueUrl: process.env.VIRUS_SCAN_QUEUE_URL,
