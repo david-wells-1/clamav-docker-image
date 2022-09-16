@@ -16,7 +16,6 @@ const app = Consumer.create({
     console.log('message', message);
     const parsedBody = JSON.parse(message.Body);
     const scanBucket = parsedBody.Records[0].s3.bucket.name
-    // const documentKey = parsedBody.Records[0].s3.object.key.replace(/\+/g, " ");
     const documentKey = parsedBody.Records[0].s3.object.key.replace(/\+/g, " ").replace(/\%28/g, "(").replace(/\%29/g, ")");
     
     const { Body: fileData } = await s3.getObject({
@@ -41,17 +40,24 @@ const app = Consumer.create({
         Tagging: 'AV_SCAN=CLEAN',
       }).promise();
 
-      await s3.deleteObject({
-        Bucket: scanBucket,
-        Key: documentKey,
-      }).promise();
+      // await s3.deleteObject({
+      //   Bucket: scanBucket,
+      //   Key: documentKey,
+      // }).promise();
 
     } catch (e) {
       if (e.code === 1) {
         await s3.putObjectTagging({
           Bucket: process.env.QUARANTINE_BUCKET,
           Key: documentKey,
-          Tagging:'AV_SCAN=INFECTED',
+          Tagging: {
+            TagSet: [
+              {
+                Key: 'AV_SCAN',
+                Value: 'INFECTED',
+              },
+            ],
+          },
         }).promise();
       }
     } finally {
