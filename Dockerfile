@@ -2,7 +2,7 @@ FROM ubuntu
 
 WORKDIR /home/clamav
 
-RUN apt update -y
+RUN apt update && apt upgrade -y
 RUN apt install curl sudo procps -y
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -

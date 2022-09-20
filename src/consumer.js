@@ -16,7 +16,12 @@ const app = Consumer.create({
     console.log('message', message);
     const parsedBody = JSON.parse(message.Body);
     const scanBucket = parsedBody.Records[0].s3.bucket.name
-    const documentKey = parsedBody.Records[0].s3.object.key.replace(/\+/g, " ").replace(/\%2B/g, "+").replace(/\%27/g, "'").replace(/\%28/g, "(").replace(/\%29/g, ")");
+    const documentKey = parsedBody.Records[0].s3.object.key
+      .replace(/\+/g, " ")
+      .replace(/\%2B/g, "+")
+      .replace(/\%27/g, "'")
+      .replace(/\%28/g, "(")
+      .replace(/\%29/g, ")");
     
     const { Body: fileData } = await s3.getObject({
       Bucket: scanBucket,
