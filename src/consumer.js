@@ -13,7 +13,6 @@ const sqs = new SQS();
 const app = Consumer.create({
   queueUrl: process.env.VIRUS_SCAN_QUEUE_URL,
   handleMessage: async (message) => {
-    console.log('message', message);
     const parsedBody = JSON.parse(message.Body);
     const scanBucket = parsedBody.Records[0].s3.bucket.name
     const documentKey = parsedBody.Records[0].s3.object.key
